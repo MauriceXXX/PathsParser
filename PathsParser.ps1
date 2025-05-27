@@ -6,7 +6,7 @@ Write-Host "
    ██║     ██╔══██╗██║██║╚██╔╝██║██╔══╝  ██║     ██║██╔══╝  ██╔══╝  
    ╚██████╗██║  ██║██║██║ ╚═╝ ██║███████╗███████╗██║██║     ███████╗
     ╚═════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚══════╝" -ForegroundColor Red
-Write-Host "          -------------------- " -NoNewline -ForegroundColor Blue
+Write-Host "         -------------------- " -NoNewline -ForegroundColor Blue
 Write-Host "PATHS PARSER" -NoNewline -ForegroundColor Red
 Write-Host " --------------------" -ForegroundColor Blue
 Write-Host "`n"
