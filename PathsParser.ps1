@@ -6,7 +6,7 @@ Write-Host "
    ██║     ██╔══██╗██║██║╚██╔╝██║██╔══╝  ██║     ██║██╔══╝  ██╔══╝  
    ╚██████╗██║  ██║██║██║ ╚═╝ ██║███████╗███████╗██║██║     ███████╗
     ╚═════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚══════╝" -ForegroundColor Red
-Write-Host "          -------------------- " -NoNewline -ForegroundColor Blue
+Write-Host "        -------------------- " -NoNewline -ForegroundColor Blue
 Write-Host "PATHS PARSER" -NoNewline -ForegroundColor Red
 Write-Host " --------------------" -ForegroundColor Blue
 Write-Host "`n"
@@ -42,20 +42,32 @@ foreach ($line in $paths) {
 
 $uniquePaths = $uniquePaths | Sort-Object
 
-# Beispiel für die Ausgabe
+# Ergebnisse vorbereiten (Dummy Status-Zuordnung)
+$results = foreach ($path in $uniquePaths) {
+    # Dummy logic: simulate status
+    $status = if ($path -match "delete" -or $path -match "old") {
+        "DELETED"
+    } elseif ($path -match "unsigned" -or $path -match "temp") {
+        "NotSigned"
+    } else {
+        "Valid"
+    }
+
+    [PSCustomObject]@{
+        Status = $status
+        Path   = $path
+    }
+}
+
+# Ausgabe
 Write-Host ""
 Write-Host ("{0,-15} {1}" -f "Status", "Path") -ForegroundColor Gray
 Write-Host ("-" * 80)
 
 foreach ($entry in $results) {
-    $status = $entry.Status
-    $path = $entry.Path
-
-    # Nur "NotSigned" oder "DELETED" anzeigen
-    if ($status -ne "Valid") {
-        Write-Host ("{0,-15} {1}" -f $status, $path)
+    if ($entry.Status -ne "Valid") {
+        Write-Host ("{0,-15} {1}" -f $entry.Status, $entry.Path)
     }
 }
-
 
 Write-Host "`nFinished!" -ForegroundColor Green
