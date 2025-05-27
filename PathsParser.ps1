@@ -1,11 +1,17 @@
 Clear-Host
-Write-Host "  ____ ____  ___ __  __ _____ _     ___ _____ _____ 
- / ___|  _ \|_ _|  \/  | ____| |   |_ _|  ___| ____|
-| |   | |_) || || |\/| |  _| | |    | || |_  |  _|  
-| |___|  _ < | || |  | | |___| |___ | ||  _| | |___ 
- \____|_| \_|___|_|  |_|_____|_____|___|_|   |_____| `n" -ForegroundColor Red
-Write-Host "   ---------------- Paths Parser ----------------`n" -ForegroundColor Cyan
+Write-Host " 
+    ██████╗██████╗ ██╗███╗   ███╗███████╗██╗     ██╗███████╗███████╗
+   ██╔════╝██╔══██╗██║████╗ ████║██╔════╝██║     ██║██╔════╝██╔════╝
+   ██║     ██████╔╝██║██╔████╔██║█████╗  ██║     ██║█████╗  █████╗  
+   ██║     ██╔══██╗██║██║╚██╔╝██║██╔══╝  ██║     ██║██╔══╝  ██╔══╝  
+   ╚██████╗██║  ██║██║██║ ╚═╝ ██║███████╗███████╗██║██║     ███████╗
+    ╚═════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚══════╝" -ForegroundColor Red
+Write-Host "          -------------------- " -NoNewline -ForegroundColor Blue
+Write-Host "PATHS PARSER" -NoNewline -ForegroundColor Red
+Write-Host " --------------------" -ForegroundColor Blue
+Write-Host "`n"
 
+# Eingabe des Dateipfads
 do {
     $filePath = Read-Host "Input "
 
@@ -18,16 +24,16 @@ do {
 Write-Host "`nReading: $filePath" -ForegroundColor Cyan
 Write-Host "`n   ---------------------------------------------`n" -ForegroundColor Cyan
 
+# Pfade einlesen
 $paths = Get-Content -Path $filePath
 
 $regex = ':\s+(.*)$'
-
 $uniquePaths = @()
 
+# Pfade extrahieren
 foreach ($line in $paths) {
     if ($line -match $regex) {
         $path = $matches[1].Trim()
-
         if ($path -match '\.\w{2,5}$' -and -not $uniquePaths.Contains($path)) {
             $uniquePaths += $path
         }
@@ -36,15 +42,20 @@ foreach ($line in $paths) {
 
 $uniquePaths = $uniquePaths | Sort-Object
 
-foreach ($path in $uniquePaths) {
-    if (Test-Path $path -PathType Leaf) {
-        $sig = Get-AuthenticodeSignature -FilePath $path
-        if ($sig.Status -ne 'Valid') {
-            Write-Host ("{0,-12} {1}" -f $sig.Status, $path.ToUpper()) -ForegroundColor Yellow
-        }
-    } else {
-        Write-Host ("{0,-12} {1}" -f "DELETED:", $path.ToUpper()) -ForegroundColor Red
+# Beispiel für die Ausgabe
+Write-Host ""
+Write-Host ("{0,-15} {1}" -f "Status", "Path") -ForegroundColor Gray
+Write-Host ("-" * 80)
+
+foreach ($entry in $results) {
+    $status = $entry.Status
+    $path = $entry.Path
+
+    # Nur "NotSigned" oder "DELETED" anzeigen
+    if ($status -ne "Valid") {
+        Write-Host ("{0,-15} {1}" -f $status, $path)
     }
 }
+
 
 Write-Host "`nFinished!" -ForegroundColor Green
