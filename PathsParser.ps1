@@ -22,13 +22,11 @@ do {
 
 Write-Host "`nReading: $filePath" -ForegroundColor Cyan
 
-# Pfade einlesen
 $paths = Get-Content -Path $filePath
 
 $regex = ':\s+(.*)$'
 $uniquePaths = @()
 
-# Pfade extrahieren
 foreach ($line in $paths) {
     if ($line -match $regex) {
         $path = $matches[1].Trim()
@@ -40,7 +38,6 @@ foreach ($line in $paths) {
 
 $uniquePaths = $uniquePaths | Sort-Object
 
-# Ausgabe
 Write-Host ""
 Write-Host ("{0,-15} {1}" -f "Status", "Path") -ForegroundColor Blue
 Write-Host ("-" * 80)
