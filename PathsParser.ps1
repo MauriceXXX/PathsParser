@@ -43,17 +43,19 @@ Write-Host "`nReading: $filePath" -ForegroundColor Cyan
 
 $paths = Get-Content -Path $filePath
 
-$regex = ':\s+(.*)$'
+$regex = '(?:[A-Za-z]:\\(?:[^\\/:*?"<>|\r\n]+\\)*[^\\/:*?"<>|\r\n]*\.\w{2,5})'
 $uniquePaths = @()
 
 foreach ($line in $paths) {
-    if ($line -match $regex) {
-        $path = $matches[1].Trim()
-        if ($path -match '\.\w{2,5}$' -and -not $uniquePaths.Contains($path)) {
+    $matches = [regex]::Matches($line, $regex)
+    foreach ($match in $matches) {
+        $path = $match.Value.Trim()
+        if (-not $uniquePaths.Contains($path)) {
             $uniquePaths += $path
         }
     }
 }
+
 
 $uniquePaths = $uniquePaths | Sort-Object
 
