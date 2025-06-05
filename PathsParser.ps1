@@ -47,7 +47,7 @@ $regex = '(?:[A-Za-z]:\\(?:[^\\/:*?"<>|\r\n]+\\)*[^\\/:*?"<>|\r\n]*\.(?![a-zA-Z0
 $uniquePaths = @()
 
 foreach ($line in $paths) {
-    if ($line.ToLower().Contains("manifest")) { return }
+    if ($line.ToLower().Contains("manifest")) { continue }
     $matches = [regex]::Matches($line, $regex)
     foreach ($match in $matches) {
         $path = $match.Value.Trim()
