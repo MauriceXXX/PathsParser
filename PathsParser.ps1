@@ -96,4 +96,4 @@ foreach ($path in $uniquePaths) {
     }
 }
 
-Write-Host "`nFinished!ee" -ForegroundColor Green
+Write-Host "`nFinished!" -ForegroundColor Green
