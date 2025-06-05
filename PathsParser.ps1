@@ -39,7 +39,7 @@ do {
     }
 } while (-not $filePath)
 
-Write-Host "`nReading: $filePath" -ForegroundColor Cyan
+Write-Host "`nReading: $filePath!" -ForegroundColor Cyan
 
 $paths = Get-Content -Path $filePath
 
