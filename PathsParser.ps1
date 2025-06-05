@@ -43,7 +43,7 @@ Write-Host "`nReading: $filePath" -ForegroundColor Cyan
 
 $paths = Get-Content -Path $filePath
 
-$regex = '(?:[A-Za-z]:\\(?:[^\\/:*?"<>|\r\n]+\\)*[^\\/:*?"<>|\r\n]*\.(?!confi$|2\.confi$)(?=[0-9]*[a-zA-Z][a-zA-Z0-9]*$)[a-zA-Z0-9]{2,5})'
+$regex = '(?:[A-Za-z]:\\(?:[^\\/:*?"<>|\r\n]+\\)*[^\\/:*?"<>|\r\n]*\.(?!config$|2\.config$)(?=[0-9]*[a-zA-Z][a-zA-Z0-9]*$)[a-zA-Z0-9]{2,5})'
 $uniquePaths = @()
 
 foreach ($line in $paths) {
