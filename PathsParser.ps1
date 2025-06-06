@@ -11,6 +11,7 @@ Write-Host "PATHS PARSER" -NoNewline -ForegroundColor Red
 Write-Host " --------------------" -ForegroundColor Blue
 Write-Host "`n"
 
+
 function Get-PECompileTime {
     param ([string]$Path)
 
@@ -39,18 +40,23 @@ do {
     }
 } while (-not $filePath)
 
-Write-Host "`nReading: $filePath!" -ForegroundColor Cyan
+Write-Host "nReading: $filePath!" -ForegroundColor Cyan
 
-$paths = Get-Content -Path $filePath
-
-$regex = '(?:[A-Za-z]:\\(?:[^\\/:*?"<>|\r\n]+\\)*[^\\/:*?"<>|\r\n]*\.(?![a-zA-Z0-9]*?(config|confi|manifest|mani))(?=[a-zA-Z])[a-zA-Z0-9]{2,5})'
+$regex = '(?:[a-zA-Z]:|\\\\\?\\|\\\?\?\\|\\\?\\|\\\?\\\?\\)[^\r\n<>:"|?*]*?\.[a-zA-Z]{1,4}(?=\s|$)'
 $uniquePaths = @()
+$paths = Get-Content -Path $filePath
 
 foreach ($line in $paths) {
     if ($line.ToLower().Contains("manifest")) { continue }
+
+    # Entferne config-Endungen vor dem Match
+    $line = $line -replace "\.\d*\.confi?g", ""
+
     $matches = [regex]::Matches($line, $regex)
     foreach ($match in $matches) {
+        Write-Host($match)
         $path = $match.Value.Trim()
+        Write-Host $path
         if (-not $uniquePaths.Contains($path)) {
             $uniquePaths += $path
         }
@@ -68,7 +74,7 @@ $now = Get-Date
 $cutoff = $now.AddDays(-365)
 
 foreach ($path in $uniquePaths) {
-    $print = $false
+    $print = $false  # Reset print flag for each path
     $status = ""
     $pathUpper = $path.ToUpper()
 
@@ -77,6 +83,7 @@ foreach ($path in $uniquePaths) {
         $print = $true
     } else {
         $sig = Get-AuthenticodeSignature -FilePath $path
+
         if ($sig.Status -ne 'Valid') {
             $compileTime = Get-PECompileTime -Path $path
             if ($compileTime -ne $null -and $compileTime -gt $cutoff) {
@@ -85,16 +92,20 @@ foreach ($path in $uniquePaths) {
                 } else {
                     $status = $sig.Status
                 }
-
                 $print = $true
             }
         }
     }
 
     if ($print) {
-        $color = if ($status -eq "DELETED") { "DarkRed" } elseif ($status -eq "UNSIGNED") { "Red" } else { "DarkRed" }
+        $color = switch ($status) {
+            "DELETED"  { "DarkRed" }
+            "UNSIGNED" { "Red" }
+            default    { "DarkRed" }
+        }
         Write-Host ("{0,-15} {1}" -f $status, $pathUpper) -ForegroundColor $color
     }
 }
 
-Write-Host "`nFinished!" -ForegroundColor Green
+
+Write-Host "nFinished!" -ForegroundColor Green
