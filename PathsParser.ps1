@@ -43,14 +43,28 @@ do {
 Write-Host "nReading: $filePath!" -ForegroundColor Cyan
 
 $regex = '(?:[a-zA-Z]:|\\\\\?\\|\\\?\?\\|\\\?\\|\\\?\\\?\\)[^\r\n<>:"|?*]*?\.[a-zA-Z]{1,4}(?=\s|$)'
+$filteredPaths = @()
 $uniquePaths = @()
 $paths = Get-Content -Path $filePath
 
 foreach ($line in $paths) {
-    if ($line.ToLower().Contains("manifest")) { continue }
+    $lowerLine = $line.ToLower()
 
-    # Entferne config-Endungen vor dem Match
-    $line = $line -replace "\.\d*\.confi?g", ""
+    # Prüfe: .<irgendeine Endung>.config
+    if ($lowerLine -match '\.\w+\.config$') {
+        # Prüfe, ob die Datei mit .config existiert
+        if (-not (Test-Path -Path $line)) {
+            # Wenn sie NICHT existiert → .config entfernen
+            $line = $line -replace '\.config$', ''
+        }
+    }
+
+    $filteredPaths += $line
+}
+    
+
+foreach ($line in $paths) {
+    if ($line.ToLower().Contains("manifest")) { continue }
 
     $matches = [regex]::Matches($line, $regex)
     foreach ($match in $matches) {
